@@ -1,0 +1,25 @@
+{
+  "name": "notes-api-2324802010234",
+  "version": "1.0.0",
+  "description": "Thực hành Điện toán đám mây LAB1 - Nguyễn Văn Hùng - 2324802010234",
+  "main": "index.js",
+  "scripts": {
+    "test": "node --test",
+    "start": "node src/server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/teodev005/notes-api-2324802010234.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/teodev005/notes-api-2324802010234/issues"
+  },
+  "homepage": "https://github.com/teodev005/notes-api-2324802010234#readme",
+  "dependencies": {
+    "express": "^5.3.0"
+  }
+}

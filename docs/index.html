@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bài 1 - Hello Cloud - Nguyễn Văn Hùng</title>
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      line-height: 1.65;
+      color: #1e293b;
+      background: #f1f5f9;
+    }
+
+    main {
+      max-width: 1100px;
+      margin: 30px auto;
+      padding: 30px;
+      background: white;
+      border-radius: 14px;
+    }
+
+    h1, h2 { color: #1654a0; }
+    h1 { line-height: 1.3; }
+    h2 { margin-top: 30px; }
+
+    .info {
+      background: #eff6ff;
+      padding: 16px;
+      border-left: 4px solid #2563eb;
+    }
+
+    .table-wrap { overflow-x: auto; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+    }
+
+    th, td {
+      border: 1px solid #cbd5e1;
+      padding: 12px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th { background: #eff6ff; }
+    li { margin-bottom: 14px; }
+    a { color: #1654a0; }
+
+    .note {
+      padding: 14px;
+      background: #fff7ed;
+      border-left: 4px solid #f59e0b;
+    }
+
+    @media (max-width: 600px) {
+      main { margin: 12px; padding: 18px; }
+      h1 { font-size: 25px; }
+    }
+  </style>
+</head>
+<body>
+<main>
+  <h1>Bài 1: Hello Cloud API</h1>
+
+  <div class="info">
+    <strong>Sinh viên:</strong> Nguyễn Văn Hùng<br>
+    <strong>MSSV:</strong> 2324802010234<br>
+    <strong>Học phần:</strong> Thực hành Điện toán đám mây<br>
+    <strong>Ngày ghi nhận:</strong> 05/11/2026
+  </div>
+
+  <h2>1. Kết quả triển khai</h2>
+  <p>
+    Ứng dụng được xây dựng bằng Node.js và Express,
+    chạy trong GitHub Codespaces tại cổng 3000.
+    Tuyến GET / trả về thông điệp chào cùng thông tin
+    môi trường thực thi. API đã được mở thành công
+    trên máy tính và điện thoại.
+  </p>
+
+  <p>
+    <a href="https://github.com/teodev005/notes-api-2324802010234">
+      Xem repository mã nguồn
+    </a>
+  </p>
+
+  <h2>2. Bảng so sánh môi trường</h2>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th scope="col">Tiêu chí</th>
+          <th scope="col">Máy cá nhân</th>
+          <th scope="col">Codespace</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th scope="row">
+            Thời gian từ lúc bắt đầu đến khi chạy được node -v
+          </th>
+          <td>Chưa ghi nhận phép đo.</td>
+          <td>
+            Đã đo 4 phút 00,90 giây (240,90 giây)
+            đến khi Terminal khả dụng.
+            Chưa đo riêng đến khi chạy được node -v.
+          </td>
+        </tr>
+        <tr>
+          <th scope="row">Số CPU, RAM</th>
+          <td>
+            AMD Ryzen 7 4800H: 8 nhân, 16 luồng.
+            RAM lắp đặt 16 GB DDR4;
+            hệ thống hiển thị khoảng 15,4 GB khả dụng.
+          </td>
+          <td>
+            API ghi nhận 2 CPU logic và 7,8 GiB RAM.
+          </td>
+        </tr>
+        <tr>
+          <th scope="row">Hệ điều hành</th>
+          <td>
+            Windows 11 Home Single Language,
+            phiên bản 25H2, OS Build 26200.9711.
+          </td>
+          <td>Linux 6.8.0-1064-azure.</td>
+        </tr>
+        <tr>
+          <th scope="row">Cách truy cập từ thiết bị khác</th>
+          <td>
+            Thông thường cần dùng IP máy, mở cổng ứng dụng
+            và cấu hình mạng, tường lửa phù hợp.
+            Chưa thực nghiệm trên máy cá nhân.
+          </td>
+          <td>
+            Truy cập bằng URL HTTPS của cổng 3000
+            được chuyển tiếp; đã mở thành công trên điện thoại.
+          </td>
+        </tr>
+        <tr>
+          <th scope="row">Chi phí, đo bằng gì</th>
+          <td>
+            Chi phí thiết bị và điện năng;
+            chưa đo chi phí cụ thể.
+          </td>
+          <td>
+            Billing Usage ngày 05/11/2026 ghi nhận
+            0,28 giờ máy 2 lõi, tương đương khoảng
+            0,56 core-giờ; storage 0,01 GB-tháng.
+            Compute có giá trị trước khấu trừ 0,05 USD;
+            storage dưới 0,01 USD.
+            Số tiền tính phí: 0 USD.
+            Đây là số liệu tài khoản theo ngày,
+            chưa tách riêng repository bài làm.
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p class="note">
+    Thời gian Terminal khả dụng thực tế cao hơn mục tiêu
+    cấp phát dưới 2 phút. Số CPU và RAM từ API phản ánh
+    tài nguyên hệ thống mà Node.js nhìn thấy.
+    Các số liệu này không phải kết quả đo hiệu năng ứng dụng.
+  </p>
+
+  <h2>3. Liên hệ 5 đặc tính NIST</h2>
+  <ol>
+    <li>
+      <strong>Tự phục vụ theo yêu cầu:</strong>
+      Thao tác tạo Codespace cho phép yêu cầu môi trường
+      phát triển qua giao diện mà không cần quản trị viên
+      cài đặt trực tiếp trên từng máy.
+    </li>
+    <li>
+      <strong>Truy cập mạng rộng:</strong>
+      IDE được sử dụng qua trình duyệt; URL API đã mở
+      thành công trên điện thoại khi cổng được đặt Public.
+    </li>
+    <li>
+      <strong>Gộp tài nguyên:</strong>
+      Codespace được cung cấp trên hạ tầng dùng chung
+      của nhà cung cấp. API ghi nhận hostname
+      codespaces-45fe99, nhưng riêng hostname chưa đủ
+      chứng minh cách phân bổ tài nguyên vật lý.
+    </li>
+    <li>
+      <strong>Co giãn nhanh:</strong>
+      Việc yêu cầu cấp phát Codespace và tùy chọn thay đổi
+      loại máy minh họa khả năng điều chỉnh tài nguyên.
+      Bài này chưa thực nghiệm đổi loại máy hoặc
+      tự động co giãn ứng dụng.
+    </li>
+    <li>
+      <strong>Dịch vụ đo lường được:</strong>
+      Billing Usage ghi nhận compute và storage,
+      cho phép theo dõi mức sử dụng và số tiền tính phí.
+    </li>
+  </ol>
+
+  <h2>4. Nhận xét</h2>
+  <p>
+    Codespaces cho phép xây dựng và chạy API trên môi trường
+    đám mây bằng trình duyệt. Việc cấu hình môi trường có thể
+    được dùng lại qua repository, giúp giảm thao tác cài đặt
+    lặp lại trên máy cá nhân. Việc sử dụng vẫn phụ thuộc
+    kết nối mạng và cần theo dõi hạn mức tài nguyên.
+  </p>
+
+  <p class="note">
+    GitHub Pages phục vụ trang kết quả tĩnh này.
+    API Express chỉ hoạt động khi Codespace và tiến trình
+    ứng dụng đang chạy, với quyền truy cập phù hợp.
+  </p>
+</main>
+</body>
+</html>
