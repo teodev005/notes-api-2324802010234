@@ -219,6 +219,99 @@
     API Express chỉ hoạt động khi Codespace và tiến trình
     ứng dụng đang chạy, với quyền truy cập phù hợp.
   </p>
+  <section id="bai-2">
+  <h2>Bài 2. Ảo hóa, container và mô phỏng trung tâm dữ liệu</h2>
+
+  <p>
+    Image Docker <code>ghcr.io/teodev005/notes-api:1.0</code>.
+    <a href="https://github.com/users/teodev005/packages/container/package/notes-api">
+      Xem package trên GitHub
+    </a>.
+  </p>
+
+  <h3>So sánh Codespace và container</h3>
+  <table>
+    <thead>
+      <tr>
+        <th scope="col">Tiêu chí</th>
+        <th scope="col">Codespace</th>
+        <th scope="col">Container notes2</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Thời gian khởi động</td>
+        <td>240,90 giây đến khi Terminal khả dụng</td>
+        <td>0,389 giây để chạy và thoát container tạm từ image có sẵn</td>
+      </tr>
+      <tr>
+        <td>Lưu trữ</td>
+        <td>15 GB-tháng là hạn mức lưu trữ nêu trong đề</td>
+        <td>Image notes-api:1.0 có Disk Usage 251 MB và Content Size 63,3 MB</td>
+      </tr>
+      <tr>
+        <td>Nhân hệ điều hành</td>
+        <td>Linux 6.8.0-1070-azure theo uname -r</td>
+        <td>Dùng chung nhân Linux của Codespace. Đã đối chiếu uname -r với notes1</td>
+      </tr>
+      <tr>
+        <td>Mức cô lập</td>
+        <td>Môi trường máy ảo có nhân hệ điều hành riêng</td>
+        <td>Cô lập tiến trình, giới hạn 0,5 CPU và 128 MiB RAM</td>
+      </tr>
+    </tbody>
+  </table>
+  <p>Hai phép đo thời gian có mốc kết thúc khác nhau. Hạn mức lưu trữ
+    GB-tháng và kích thước image cũng là hai đại lượng khác nhau.</p>
+
+  <h3>Kết quả mô phỏng CloudSim Plus</h3>
+  <table>
+    <thead>
+      <tr>
+        <th scope="col">Lần</th>
+        <th scope="col">Thay đổi so với cấu hình gốc</th>
+        <th scope="col">Cloudlet hoàn thành</th>
+        <th scope="col">FinishTime lớn nhất</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>0</td><td>2 VM, 4 cloudlet, Time-shared</td><td>4/4</td><td>20,1 giây</td></tr>
+      <tr><td>1</td><td>Tăng số VM được yêu cầu từ 2 lên 4</td><td>4/4</td><td>45,6 giây</td></tr>
+      <tr><td>2</td><td>Tăng số cloudlet từ 4 lên 8</td><td>4/8</td><td>40,1 giây trong số tác vụ đã hoàn thành</td></tr>
+      <tr><td>3</td><td>Đổi sang Space-shared, giữ 2 VM và 4 cloudlet</td><td>4/4</td><td>20,1 giây</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Câu hỏi phản biện</h3>
+  <ol>
+    <li>
+      <p><strong>Vì sao API báo 7,8 GiB dù notes2 bị giới hạn 128 MiB?</strong></p>
+      <p>Trong lần thử, <code>os.totalmem()</code> trả về RAM hệ thống mà
+        Node.js nhìn thấy. Docker áp giới hạn riêng qua cgroups.
+        <code>docker stats</code> ghi 12,84 MiB đang dùng trên giới hạn
+        128 MiB. Khi cấu hình bộ nhớ cho Java hoặc Node.js, cần dựa vào
+        giới hạn container và chừa dung lượng cho các vùng ngoài heap.</p>
+    </li>
+    <li>
+      <p><strong>Time-shared và Space-shared khác nhau thế nào?</strong></p>
+      <p>Time-shared chia sẻ năng lực CPU giữa các cloudlet đang chạy.
+        Space-shared cho cloudlet chờ đến khi VM có đủ lõi. Với 4 cloudlet
+        trên 2 VM, cả hai lần đều hoàn thành ở giây 20,1. Trong lần chạy
+        bổ sung với 8 cloudlet, Space-shared xử lý thành hai đợt và hoàn
+        thành 8/8 ở giây 40,3. Với gói giá rẻ cho tải nhẹ, nhà cung cấp
+        có thể chọn Time-shared để chia sẻ CPU, nếu gói chấp nhận hiệu
+        năng dao động khi nhiều tác vụ chạy cùng lúc.</p>
+    </li>
+    <li>
+      <p><strong>Mô phỏng giúp gì trước khi thuê hạ tầng thật?</strong></p>
+      <p>Mô phỏng cho phép thử số VM, cấu hình host và chính sách lập
+        lịch trước khi thuê. Trong lần 1, yêu cầu 4 VM nhưng bảng chỉ
+        ghi VM 0 và VM 1 thực thi cloudlet. Kết quả thực tế có thể khác
+        do tải thay đổi, độ trễ mạng, tốc độ lưu trữ và mức tranh chấp
+        tài nguyên. Cần đo lại với tải đại diện khi triển khai thật.</p>
+    </li>
+  </ol>
+</section>
 </main>
 </body>
 </html>
