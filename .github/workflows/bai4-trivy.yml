@@ -1,0 +1,71 @@
+name: Bai 4 - Quet Trivy
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Lay ma nguon
+        uses: actions/checkout@v4
+
+      - name: Build hai image
+        run: |
+          docker build --pull -t notes-api:alpine .
+          sed 's/node:22-alpine/node:22/' Dockerfile > Dockerfile.full
+          docker build --pull -f Dockerfile.full -t notes-api:full .
+
+      - name: Quet Trivy va tong hop
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p reports
+          docker pull aquasec/trivy:latest
+          docker run --rm aquasec/trivy:latest --version
+
+          echo '| Image nền | Kích thước image ứng dụng | HIGH | CRITICAL |' > reports/summary.md
+          echo '| --- | --- | --- | --- |' >> reports/summary.md
+
+          for t in alpine full; do
+            docker run --rm \
+              -v /var/run/docker.sock:/var/run/docker.sock \
+              -v trivy-cache:/root/.cache/ \
+              aquasec/trivy:latest image \
+              --scanners vuln \
+              --severity HIGH,CRITICAL \
+              --format json \
+              --exit-code 0 \
+              notes-api:$t > reports/$t.json
+
+            high=$(jq '[.Results[]? | .Vulnerabilities[]? | select(.Severity == "HIGH")] | length' reports/$t.json)
+            critical=$(jq '[.Results[]? | .Vulnerabilities[]? | select(.Severity == "CRITICAL")] | length' reports/$t.json)
+            bytes=$(docker image inspect notes-api:$t --format '{{.Size}}')
+            size=$(awk -v b="$bytes" 'BEGIN {printf "%.2f MiB", b/1048576}')
+
+            base="node:22"
+            if [ "$t" = "alpine" ]; then
+              base="node:22-alpine"
+            fi
+
+            echo "| $base | $size | $high | $critical |" >> reports/summary.md
+
+            echo "=== notes-api:$t ==="
+            echo "Size: $size"
+            echo "HIGH: $high"
+            echo "CRITICAL: $critical"
+          done
+
+          cat reports/summary.md
+          cat reports/summary.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Luu bao cao
+        uses: actions/upload-artifact@v4
+        with:
+          name: bai4-trivy-reports
+          path: reports/
