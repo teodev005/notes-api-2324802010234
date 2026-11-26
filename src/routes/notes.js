@@ -2,20 +2,25 @@ const express = require('express');
 const multer = require('multer');
 const Note = require('../models/note');
 const { bucket } = require('../storage');
+const requireAuth = require('../middleware/auth');
 
 const router = express.Router();
 
+// Tất cả route ghi chú đều yêu cầu JWT hợp lệ.
+router.use(requireAuth);
+
 const upload = multer({
   storage: multer.memoryStorage(),
-  limits: {
-    fileSize: 2 * 1024 * 1024
-  }
+  limits: { fileSize: 2 * 1024 * 1024 }
 });
 
+// Chỉ liệt kê ghi chú của người đang đăng nhập.
 router.get('/', async (req, res) => {
-  const filter = req.query.tag
-    ? { tags: String(req.query.tag) }
-    : {};
+  const filter = { owner: req.user.sub };
+
+  if (req.query.tag) {
+    filter.tags = String(req.query.tag);
+  }
 
   const notes = await Note.find(filter)
     .sort({ createdAt: -1 })
@@ -24,8 +29,12 @@ router.get('/', async (req, res) => {
   res.json(notes);
 });
 
+// Đọc một ghi chú thuộc sở hữu của người dùng.
 router.get('/:id', async (req, res) => {
-  const note = await Note.findById(req.params.id);
+  const note = await Note.findOne({
+    _id: req.params.id,
+    owner: req.user.sub
+  });
 
   if (!note) {
     return res.status(404).json({
@@ -36,23 +45,29 @@ router.get('/:id', async (req, res) => {
   res.json(note);
 });
 
+// Chủ sở hữu được lấy từ JWT, không lấy từ dữ liệu gửi lên.
 router.post('/', async (req, res) => {
   const { title, content, tags } = req.body ?? {};
 
   const note = await Note.create({
     title,
     content,
-    tags
+    tags,
+    owner: req.user.sub
   });
 
   res.status(201).json(note);
 });
 
+// Chỉ cập nhật ghi chú thuộc sở hữu của người dùng.
 router.put('/:id', async (req, res) => {
   const { title, content, tags } = req.body ?? {};
 
-  const note = await Note.findByIdAndUpdate(
-    req.params.id,
+  const note = await Note.findOneAndUpdate(
+    {
+      _id: req.params.id,
+      owner: req.user.sub
+    },
     { title, content, tags },
     { new: true, runValidators: true }
   );
@@ -66,8 +81,12 @@ router.put('/:id', async (req, res) => {
   res.json(note);
 });
 
+// Chỉ xóa ghi chú thuộc sở hữu của người dùng.
 router.delete('/:id', async (req, res) => {
-  const note = await Note.findByIdAndDelete(req.params.id);
+  const note = await Note.findOneAndDelete({
+    _id: req.params.id,
+    owner: req.user.sub
+  });
 
   if (!note) {
     return res.status(404).json({
@@ -78,6 +97,7 @@ router.delete('/:id', async (req, res) => {
   res.status(204).end();
 });
 
+// Chỉ tải tệp vào ghi chú thuộc sở hữu của người dùng.
 router.post(
   '/:id/attachment',
   upload.single('file'),
@@ -88,7 +108,10 @@ router.post(
       });
     }
 
-    const note = await Note.findById(req.params.id);
+    const note = await Note.findOne({
+      _id: req.params.id,
+      owner: req.user.sub
+    });
 
     if (!note) {
       return res.status(404).json({
@@ -105,9 +128,7 @@ router.post(
     const { error } = await bucket().upload(
       path,
       req.file.buffer,
-      {
-        contentType: req.file.mimetype
-      }
+      { contentType: req.file.mimetype }
     );
 
     if (error) throw error;
@@ -117,7 +138,6 @@ router.post(
       .data.publicUrl;
 
     await note.save();
-
     res.json(note);
   }
 );

@@ -1,5 +1,13 @@
 require('dotenv').config();
 
+const express = require('express');
+const os = require('os');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
+const mongoose = require('mongoose');
+const notesRouter = require('./routes/notes');
+const authRouter = require('./routes/auth');
+
 const app = require('./app');
 const { connectDB } = require('./db');
 
